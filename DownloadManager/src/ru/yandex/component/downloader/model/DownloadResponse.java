@@ -1,9 +1,7 @@
-package ru.yandex.component.downloader.impl;
+package ru.yandex.component.downloader.model;
 
-import ru.yandex.component.downloader.DownloadResponse;
-import ru.yandex.component.downloader.Status;
-
-public class HTTPDownloadResponse implements DownloadResponse {
+public class DownloadResponse {
+	
 	private Status status;
 	private String errorMessage;
 	private String content;
@@ -20,24 +18,19 @@ public class HTTPDownloadResponse implements DownloadResponse {
 		this.errorMessage = errorMessage;
 	}
 
-	@Override
 	public Status getStatus() {
 		return status;
 	}
 
-	@Override
 	public String getErrorMessage() {
 		return errorMessage;
 	}
 
-	@Override
 	public String getContent() {
 		return content;
 	}
 
-	@Override
 	public String toString() {
 		return "HTTPDownloadResponse [status=" + status + ", errorMessage=" + errorMessage + ", content=" + content + "]";
 	}
-
 }

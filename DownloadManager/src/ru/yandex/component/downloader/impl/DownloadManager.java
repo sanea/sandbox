@@ -1,4 +1,4 @@
-package ru.yandex.component.downloader;
+package ru.yandex.component.downloader.impl;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -8,30 +8,33 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import ru.yandex.component.downloader.impl.HTTPDownloadController;
-import ru.yandex.component.downloader.impl.HTTPDownloadRequest;
+import ru.yandex.component.downloader.DownloadController;
+import ru.yandex.component.downloader.DownloadRequest;
+import ru.yandex.component.downloader.model.DownloadResponse;
+import ru.yandex.component.downloader.model.Status;
 
 public class DownloadManager {
+	
 	private final ExecutorService executor = Executors.newFixedThreadPool(10);
 
 	private Map<String, DownloadController> downloadControllerMap = new HashMap<String, DownloadController>();
 
 	public void startHTTPDownload(String urlString) {
-		DownloadRequest downloadRequest = new HTTPDownloadRequest();
+		
 		Properties prop = new Properties();
-		prop.setProperty(HTTPDownloadRequest.URL_PROPERTY, urlString);
-		downloadRequest.setProperties(prop);
-		DownloadController downloadController = new HTTPDownloadController();
-		downloadController.setDownloadRequest(downloadRequest);
-		downloadController.setExecutorService(executor);
+		prop.setProperty(DownloadRequest.URL_PROPERTY, urlString);
+		
+		DownloadRequest downloadRequest = new DownloadRequest(prop);
+		
+		DownloadController downloadController = new HTTPDownloadController(executor, downloadRequest);
 		downloadControllerMap.put(urlString, downloadController);
 		downloadController.startDownload();
 	}
 
-	public Map<String, DownloadController> getDownloadControllerMap() {
-		return downloadControllerMap;
+	public DownloadController getController(String url) {
+		return downloadControllerMap.get(url);
 	}
-
+	
 	public void closeConnection() {
 		executor.shutdownNow();
 	}
@@ -69,24 +72,20 @@ public class DownloadManager {
 					// System.out.println("get " + url);
 				} else if (command[0].equalsIgnoreCase("stop")) {
 
-					downloadManager.getDownloadControllerMap().get(url).stopDownload();
+					downloadManager.getController(url).stopDownload();
 
 					// System.out.println("stop " + url);
 				} else if (command[0].equalsIgnoreCase("status")) {
 
-					Status status = downloadManager.getDownloadControllerMap().get(url).getStatus();
+					Status status = downloadManager.getController(url).getStatus();
 					System.out.println(status);
 
 					// System.out.println("status " + url);
 				} else if (command[0].equalsIgnoreCase("content")) {
 
-					DownloadResponse dr = downloadManager.getDownloadControllerMap().get(url).getContent();
+					DownloadResponse dr = downloadManager.getController(url).getContent();
 					System.out.println(dr);
 
-					// System.out.println("content " + url);
-				} else if (command[0].equalsIgnoreCase("list")) {
-					System.out.println(downloadManager.getDownloadControllerMap().entrySet());
-					
 				} else {
 					System.out.println("Unknown command");
 				}

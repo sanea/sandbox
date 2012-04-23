@@ -1,38 +1,46 @@
 package my;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
-public class DownloadRequest implements Callable<String> {
+public class DownloadRequest implements Callable<DownloadResponse> {
 
-	private static enum Status {not_started, started, done};
-	
 	private final String urlString;
-	private final Map<String,String> status;
 	
-	public DownloadRequest(String _urlString, Map<String,String> _status) {
-		status = _status;
+	public DownloadRequest(String _urlString) {
 		urlString = _urlString;
 	}
 	
 	@Override
-	public String call() throws Exception {
-		URL oracle = new URL(urlString);
-		URLConnection yc = oracle.openConnection();
-		status.put(urlString, Status.started.toString());
-		BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
-		String inputLine;
+	public DownloadResponse call() {
+		
 		StringBuilder sb = new StringBuilder();
-		while ((inputLine = in.readLine()) != null) {
-			sb.append(inputLine);
-			Thread.sleep(1000);
+		DownloadResponse dr = new DownloadResponse();
+		
+		try {
+			URL oracle = new URL(urlString);
+			URLConnection yc = oracle.openConnection();
+			dr.setStatus(Status.started);
+			BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
+			
+			String inputLine;
+			
+			while ((inputLine = in.readLine()) != null) {
+				sb.append(inputLine);
+				Thread.sleep(1000);
+			}
+			in.close();
+			dr.setContent(sb.toString());
+		} catch (IOException | InterruptedException e) {
+			dr.setErrorMessage(e.getMessage());
+		} finally {
+			dr.setStatus(Status.done);
 		}
-		in.close();
-		status.put(urlString, Status.done.toString());
-		return sb.toString();
+		
+		return dr;
 	}
 }

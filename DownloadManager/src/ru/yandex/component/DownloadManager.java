@@ -28,31 +28,39 @@ public class DownloadManager {
 			return null;
 		}
 		
-		return Protocol.valueOf(protocolAdress[0]);
+		Protocol protocol = null;
+		
+		try {
+			protocol = Protocol.valueOf(protocolAdress[0]);
+		}catch (IllegalArgumentException e) {
+		}
+		
+		return protocol;
 	}
 	
-	public void startDownload(String urlString) {
+	public boolean startDownload(String urlString) {
 		
 		Protocol protocol = getUrlProtocol(urlString);
 		
 		if(protocol == null) {
 			System.out.println("Invalid protocol, expected http or ftp");
-			return;
+			return false;
 		}
 		
 		switch (protocol) {
 		case http:
 			DownloadController downloadController = controllers.get(protocol);
-			downloadController.startDownload(new HttpDownloadRequest(urlString));
-			break;
+			return downloadController.startDownload(new HttpDownloadRequest(urlString));
 
 		case ftp:
 			System.out.println("Ftp protocol not implemented yet");
 
 		default:
-			System.out.println("Unknown protocol");
+			System.out.println("Invalid protocol, expected http or ftp");
 			break;
 		}
+		
+		return false;
 	}
 
 	private DownloadController getControllerByURL(final String url) {
@@ -109,23 +117,39 @@ public class DownloadManager {
 
 				if (command[0].equalsIgnoreCase("get")) {
 
-					downloadManager.startDownload(url);
-					System.out.println("started [" + url + "]");
+					if(downloadManager.startDownload(url)) {
+						System.out.println("started [" + url + "]");
+					} else {
+						System.out.println("Download has not been started");
+					}
 					
 				} else if (command[0].equalsIgnoreCase("stop")) {
 
-					downloadManager.stopDownload(url);
-					System.out.println("started [" + url + "]");
+					if(downloadManager.stopDownload(url)) {
+						System.out.println("stopped [" + url + "]");
+					} else {
+						System.out.println("Could not execute stop command for [" + url + "]");
+					}
 					
 				} else if (command[0].equalsIgnoreCase("status")) {
 
 					DownloadResponse dr = downloadManager.getResponse(url);
-					System.out.println(dr.getStatus());
+					
+					if(dr != null && dr.getStatus() != null) {
+						System.out.println(dr.getStatus());
+					} else {
+						System.out.println("Could not get status of [" + url + "]");
+					}
 					
 				} else if (command[0].equalsIgnoreCase("content")) {
 
 					DownloadResponse dr = downloadManager.getResponse(url);
-					System.out.println(dr);
+					
+					if(dr != null && dr.getStatus() != null) {
+						System.out.println(dr);
+					} else {
+						System.out.println("Could not get response from [" + url + "]");
+					}
 					
 				} else {
 					System.out.println("Unknown command");

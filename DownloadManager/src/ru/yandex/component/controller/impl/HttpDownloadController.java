@@ -43,6 +43,7 @@ public class HttpDownloadController implements DownloadController {
 	public DownloadResponse getResponse(String url) {
 		
 		DownloadResponse response = new DownloadResponse();
+		response.setStatus(Status.started);
 		
 		try {
 			
@@ -51,11 +52,9 @@ public class HttpDownloadController implements DownloadController {
 			if(future == null) {
 				response.setStatus(Status.error);
 				response.setErrorMessage("Download not found");
-				return response;
-			}
-			
-			if (future.isDone()) {
-				return future.get();
+			} else if (future.isDone()) {
+				response = future.get();
+				response.setStatus(Status.finished);
 			}
 			
 		} catch (CancellationException e) {

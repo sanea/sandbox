@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import ru.yandex.component.downloader.DownloadController;
+import ru.yandex.component.controller.DownloadController;
 import ru.yandex.component.downloader.model.DownloadResponse;
 import ru.yandex.component.downloader.model.Status;
 import ru.yandex.component.downloader.request.DownloadRequest;

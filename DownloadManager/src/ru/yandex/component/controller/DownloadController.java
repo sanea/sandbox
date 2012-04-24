@@ -1,4 +1,4 @@
-package ru.yandex.component.downloader;
+package ru.yandex.component.controller;
 
 import ru.yandex.component.downloader.model.DownloadResponse;
 import ru.yandex.component.downloader.request.DownloadRequest;

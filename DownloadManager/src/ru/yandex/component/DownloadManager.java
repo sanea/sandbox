@@ -5,8 +5,8 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import ru.yandex.component.controller.DownloadController;
 import ru.yandex.component.controller.impl.HttpDownloadController;
-import ru.yandex.component.downloader.DownloadController;
 import ru.yandex.component.downloader.model.DownloadResponse;
 import ru.yandex.component.downloader.model.Protocol;
 import ru.yandex.component.downloader.request.impl.HttpDownloadRequest;

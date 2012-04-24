@@ -1,15 +1,15 @@
 package ru.yandex.component.downloader;
 
 import ru.yandex.component.downloader.model.DownloadResponse;
-import ru.yandex.component.downloader.model.Status;
+import ru.yandex.component.downloader.request.DownloadRequest;
 
 public interface DownloadController {
 	
-	public void startDownload();
+	public boolean stopDownload(String url);
 
-	public void stopDownload();
+	public boolean startDownload(DownloadRequest downloadRequest);
 
-	public Status getStatus();
+	public void shutdownNow();
 
-	public DownloadResponse getContent();
+	public DownloadResponse getResponse(String url);
 }
